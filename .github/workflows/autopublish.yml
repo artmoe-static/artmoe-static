@@ -1,0 +1,37 @@
+name: npm-publish
+
+on:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+  
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    # Clone 仓库
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+      # 安装 Node.js    
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+          registry-url: https://registry.npmjs.org/
+        
+      # 发布 NPM 包
+      - name: Publish Package
+        run: |
+          git config --global user.email "leafmoes@qq.com"
+          git config --global user.name "artmoe"
+          npm version patch
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Push
+        run: |
+          git push
